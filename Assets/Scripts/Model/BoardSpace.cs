@@ -22,6 +22,8 @@ public class BoardSpace : BaseElement, IPointerDownHandler
     [HideInInspector]
     public bool hasShip;
     [HideInInspector]
+    public bool hasSkull;
+    [HideInInspector]
     public bool isEnabled;
     
     public int Number;
@@ -44,18 +46,37 @@ public class BoardSpace : BaseElement, IPointerDownHandler
     {
         if (isEnabled)
         {
-            SetNumber(UIHandler.Instance.NumberToPlace);
-            GameHandler.Instance.SpaceFilled();
+            GameHandler.Instance.lastFilledSpace = this;
+            GameHandler.Instance.SpaceClicked();
         }
     }
 
-    private void SetNumber(int num)
+    public void SetNumber(int num)
     {
         isOccupied = true;
         Number = num;
         numText.text = num.ToString();
         numText.color = Constants.NUMBER_COLORS[num - 1];
         numText.gameObject.SetActive(true);
+        GameHandler.Instance.player.numIslandSpacesFilled++;
+    }
+
+    public void PutSkull()
+    {
+        isOccupied = true;
+        shipSkullImage.sprite = UIHandler.Instance.skullSprite;
+        hasSkull = true;
+        shipSkullImage.gameObject.SetActive(true);
+        GameHandler.Instance.player.numIslandSpacesFilled++;
+        GameHandler.Instance.player.numSkullsFilled++;
+    }
+
+    public void PutShip()
+    {
+        isOccupied = true;
+        shipSkullImage.sprite = UIHandler.Instance.shipSprite;
+        hasShip = true;
+        shipSkullImage.gameObject.SetActive(true);
     }
 
     public void EnableSpace()

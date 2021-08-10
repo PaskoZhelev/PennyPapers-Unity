@@ -5,9 +5,16 @@ using UnityEngine;
 public class Constants
 {
     public static int NUM_DICE = 3;
-    public static int DICE_SIDES = 5;
+    public static int GRID_ROW = 9;
+    public static int GRID_COL = 9;
+    public static int DICE_SIDES = 6;
     public static int MAX_TREASURES = 5;
+    public static int MAX_SKULLS = 5;
     public static int MAX_ISLAND_SPACES_BOARD_TORTUGA = 30;
+
+    public static int PURPLE_DIE_INDEX = 0;
+    public static int GREEN_DIE_INDEX = 1;
+    public static int RED_DIE_INDEX = 2;
 
     public static float ANIMATION_SPEED = 5500f;
     public static float NEW_TURN_DELAY = 1.0f;

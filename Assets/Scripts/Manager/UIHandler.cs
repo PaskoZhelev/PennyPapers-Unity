@@ -12,6 +12,7 @@ public class UIHandler : MonoBehaviour
     public bool isNumberToPlaceSelected;
 
     public SelectableNumber[] generalSelectableNumbers;
+    public SelectableNumber[] purpleSelectableNumbers;
 
     [HideInInspector]
     public float timeRemaining;
@@ -21,6 +22,16 @@ public class UIHandler : MonoBehaviour
     public Text textTimer;
 
     public GameObject undoButton;
+
+    public GameObject SpecialSelectionPanel;
+    public GameObject RedSelectionPanel;
+    public GameObject PurpleSelectionPanel;
+    public GameObject GreenYesNoSelectionPanel;
+    public GameObject GreenSelectionPanel;
+    public GameObject GreenPurpleSelectionPanel;
+
+    public Sprite skullSprite;
+    public Sprite shipSprite;
 
     // Start is called before the first frame update
     void Start()
@@ -61,6 +72,16 @@ public class UIHandler : MonoBehaviour
         }
     }
 
+    public void setPurpleSelectableNumbers()
+    {
+        for (int i = 0; i < purpleSelectableNumbers.Length; i++)
+        {
+            purpleSelectableNumbers[i].SetNumber(i + 1);
+            purpleSelectableNumbers[i].UnselectPanel();
+            purpleSelectableNumbers[i].SetRelatedNumbers(purpleSelectableNumbers);
+        }
+    }
+
     public void resetGeneralSelectableNumbers()
     {
         for (int i = 0; i < generalSelectableNumbers.Length; i++)
@@ -87,6 +108,70 @@ public class UIHandler : MonoBehaviour
     {
         NumberToPlace = 0;
         isNumberToPlaceSelected = false;
+    }
+
+    public void ShowRedSelectionPanel()
+    {
+        SpecialSelectionPanel.SetActive(true);
+        RedSelectionPanel.SetActive(true);
+    }
+
+    public void ShowPurpleSelectionPanel()
+    {
+        SpecialSelectionPanel.SetActive(true);
+        PurpleSelectionPanel.SetActive(true);
+    }
+
+    public void ShowGreenYesNoSelectionPanel()
+    {
+        SpecialSelectionPanel.SetActive(true);
+        GreenYesNoSelectionPanel.SetActive(true);
+    }
+
+    public void ShowGreenPurpleSelectionPanel()
+    {
+        SpecialSelectionPanel.SetActive(true);
+        GreenPurpleSelectionPanel.SetActive(true);
+    }
+
+    public void GreenYesClicked()
+    {
+        SpecialSelectionPanel.SetActive(true);
+        GreenYesNoSelectionPanel.SetActive(false);
+        GreenSelectionPanel.SetActive(true);
+        GameHandler.Instance.EnableSeaSpaces();
+    }
+
+    public void GreenNoClicked()
+    {
+        DiceManager.Instance.findPossibleSelectionNumbersIgnoringSpecial();
+        GameHandler.Instance.ShowNecessaryActions();
+        HideAllSelectionPanels();
+    }
+
+    public void GreenClicked()
+    {
+        HideAllSelectionPanels();
+        GameHandler.Instance.currentFillType = FillType.SHIP;
+        GreenYesClicked();
+    }
+
+    public void PurpleClicked()
+    {
+        HideAllSelectionPanels();
+        GameHandler.Instance.currentFillType = FillType.NUMBER;
+        setPurpleSelectableNumbers();
+        ShowPurpleSelectionPanel();
+    }
+
+    public void HideAllSelectionPanels()
+    {
+        SpecialSelectionPanel.SetActive(false);
+        RedSelectionPanel.SetActive(false);
+        PurpleSelectionPanel.SetActive(false);
+        GreenSelectionPanel.SetActive(false);
+        GreenYesNoSelectionPanel.SetActive(false);
+        GreenPurpleSelectionPanel.SetActive(false);
     }
 
     public void ShowUndoButton()
