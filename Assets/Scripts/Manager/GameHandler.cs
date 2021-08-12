@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GameHandler : MonoBehaviour
@@ -13,6 +14,10 @@ public class GameHandler : MonoBehaviour
     public List<BoardSpace> seaBoardSpaces;
     [HideInInspector]
     public List<BoardSpace> islandBoardSpaces;
+    [HideInInspector]
+    public HashSet<BoardSpace> possibleAdjacentBoardSpaces;
+    [HideInInspector]
+    public List<BoardSpace> spacesWithSkull;
 
     [HideInInspector]
     public BoardSpace lastFilledSpace;
@@ -31,6 +36,8 @@ public class GameHandler : MonoBehaviour
         isFirstTurn = true;
         seaBoardSpaces = identifySeaBoardSpaces();
         islandBoardSpaces = identifyIslandBoardSpaces();
+        possibleAdjacentBoardSpaces = new HashSet<BoardSpace>();
+        spacesWithSkull = new List<BoardSpace>();
         GenerateBoardGrid();
 
         StartCoroutine(StartNewTurnWithDelay());
@@ -41,7 +48,9 @@ public class GameHandler : MonoBehaviour
         // Game End
         if (isGameFinished())
         {
-
+            Debug.Log("Game Finished");
+            TriggerEndGame();
+            return;
         }
 
         DiceManager.Instance.RollDice();
@@ -63,12 +72,10 @@ public class GameHandler : MonoBehaviour
 
     public void ShowNecessaryActions()
     {
-        Debug.Log("Showing necessary Actions");
         // if there are possible selection numbers 
         // then no special die was rolled
         if (DiceManager.Instance.currentPossibleSelectionNumbers.Count > 0)
         {
-            Debug.Log("No special dice rolled");
             currentFillType = FillType.NUMBER;
             UIHandler.Instance.setGeneralSelectableNumbers();
             return;
@@ -77,7 +84,6 @@ public class GameHandler : MonoBehaviour
         // RED
         if (DiceManager.Instance.isRedSpecialDieRolled())
         {
-            Debug.Log("RED rolled");
             currentFillType = FillType.SKULL;
             UIHandler.Instance.ShowRedSelectionPanel();
             EnablePossibleAdjacentToLastFilled();
@@ -87,7 +93,6 @@ public class GameHandler : MonoBehaviour
         // PURPLE
         if (DiceManager.Instance.isPurpleSpecialDieRolled() && !DiceManager.Instance.isGreenSpecialDieRolled())
         {
-            Debug.Log("PURPLE rolled");
             currentFillType = FillType.NUMBER;
             UIHandler.Instance.setPurpleSelectableNumbers();
             UIHandler.Instance.ShowPurpleSelectionPanel();
@@ -97,7 +102,6 @@ public class GameHandler : MonoBehaviour
         // GREEN
         if (DiceManager.Instance.isGreenSpecialDieRolled() && !DiceManager.Instance.isPurpleSpecialDieRolled())
         {
-            Debug.Log("GREEN rolled");
             currentFillType = FillType.SHIP;
             UIHandler.Instance.ShowGreenYesNoSelectionPanel();
             return;
@@ -106,7 +110,6 @@ public class GameHandler : MonoBehaviour
         // GREEN and PURPLE
         if (DiceManager.Instance.isGreenSpecialDieRolled() && DiceManager.Instance.isPurpleSpecialDieRolled())
         {
-            Debug.Log("GREEN and PURPLE rolled");
             UIHandler.Instance.ShowGreenPurpleSelectionPanel();
             return;
         }
@@ -114,6 +117,28 @@ public class GameHandler : MonoBehaviour
         //Max skulls already filled so Red die is ignored
         DiceManager.Instance.findPossibleSelectionNumbersIgnoringSpecial();
         ShowNecessaryActions();
+    }
+
+    // Check for treasure with the just filled space
+    public void CheckForTreasure(BoardSpace filledSpace)
+    {
+        FoundTreasure foundTreasure = filledSpace.hasShip ? TreasureHelper.FindTreasuresForSpaceWithShip(filledSpace) : TreasureHelper.FindTreasuresForNumberedSpace(filledSpace);
+        if (null != foundTreasure)
+        {
+            BoardSpace spaceWithTreasure = BoardGrid[foundTreasure.row, foundTreasure.column];
+            // treasure can't be in the sea
+            if(spaceWithTreasure.isSea || spaceWithTreasure.hasTreasure)
+            {
+                return;
+            }
+
+            Debug.Log("Treasure Found in row: " + foundTreasure.row + ", col: " + foundTreasure.column + ", Num: " + foundTreasure.Number);
+            spaceWithTreasure.ActivateTreasureCircle(foundTreasure.Number);
+            player.AddTreasure(foundTreasure.Number);
+            UIHandler.Instance.ShowTreasureNumber(foundTreasure.Number, Constants.NUMBER_COLORS[foundTreasure.Number - 1]);
+            return;
+        }
+        Debug.Log(foundTreasure);
     }
 
     // space is clicked
@@ -126,6 +151,7 @@ public class GameHandler : MonoBehaviour
                 break;
             case FillType.SKULL:
                 lastFilledSpace.PutSkull();
+                UIHandler.Instance.ShowSkullMark();
                 break;
             // Ship
             default:
@@ -144,6 +170,7 @@ public class GameHandler : MonoBehaviour
     public void TurnFinished()
     {
         if (isFirstTurn) { isFirstTurn = false; }
+        possibleAdjacentBoardSpaces.Remove(lastFilledSpace);
         UIHandler.Instance.resetGeneralSelectableNumbers();
         UIHandler.Instance.HideAllSelectionPanels();
         StartNewTurn();
@@ -156,8 +183,29 @@ public class GameHandler : MonoBehaviour
             EnableInitialIslandSpaces();
             return;
         }
-        
-        foreach(BoardSpace space in islandBoardSpaces)
+
+        // enable only adjacent to number or ship spaces
+        if(Constants.ADJACENCY_RULE_ENABLED && possibleAdjacentBoardSpaces.Count > 0)
+        {
+            foreach (BoardSpace space in possibleAdjacentBoardSpaces)
+            {
+                if (!space.isOccupied)
+                {
+                    space.EnableSpace();
+                }
+            }
+
+            return;
+        } 
+
+        // only if rule is not enabled
+        // or there are no possible spaces
+        EnableAllUnoccuppiedIslandSpaces();
+    }
+
+    public void EnableAllUnoccuppiedIslandSpaces()
+    {
+        foreach (BoardSpace space in islandBoardSpaces)
         {
             if (!space.isOccupied)
             {
@@ -185,22 +233,7 @@ public class GameHandler : MonoBehaviour
         int x = lastFilledSpace.row;
         int y = lastFilledSpace.column;
 
-        HashSet<BoardSpace> spaces = new HashSet<BoardSpace>();
-        for (int dx = (x > 0 ? -1 : 0); dx <= (x < Constants.GRID_ROW ? 1 : 0); ++dx)
-        {
-            for (int dy = (y > 0 ? -1 : 0); dy <= (y < Constants.GRID_COL ? 1 : 0); ++dy)
-            {
-                if (dx != 0 || dy != 0)
-                {
-                    Debug.Log("x:" + x + ",y:" + y + ",dx:" + dx + ",dy:" + dy);
-                    BoardSpace currSpace = BoardGrid[x + dx, y + dy];
-                    if(!currSpace.isOccupied && !currSpace.isSea && !currSpace.isMountain)
-                    {
-                        spaces.Add(currSpace);
-                    }
-                }
-            }
-        }
+        HashSet<BoardSpace> spaces = findAvailableAdjacentSpaces(x, y);
 
         if(spaces.Count == 0)
         {
@@ -215,6 +248,12 @@ public class GameHandler : MonoBehaviour
                 space.EnableSpace();
             }
         }
+    }
+
+    public void AddPossibleAdjacentIslandSpaces(int x, int y)
+    {
+        HashSet<BoardSpace> adjacentSpaces = findAvailableAdjacentSpaces(x, y);
+        possibleAdjacentBoardSpaces.UnionWith(adjacentSpaces);
     }
 
     public void EnableSeaSpaces()
@@ -249,6 +288,129 @@ public class GameHandler : MonoBehaviour
         }
 
         return false;
+    }
+
+    public void TriggerEndGame()
+    {
+        player.skullPoints = FindSkullPoints();
+        player.treasureTotalPoints = new List<int>(player.treasures).Sum();
+        player.skullTotalPoints = player.skullPoints.Sum();
+        player.FinalScore = player.treasureTotalPoints + player.skullTotalPoints;
+        UIHandler.Instance.ShowEndGamePanel();
+    }
+
+    public List<int> FindSkullPoints()
+    {
+        List<int> skullPoints = new List<int>();
+        foreach (BoardSpace space in spacesWithSkull)
+        {
+            HashSet<BoardSpace> adjacentSpaces = findAllAdjacentSpaces(space.row, space.column);
+            int smallestNum = findSmallestNumberFromSpaces(adjacentSpaces);
+            // skull is overcome
+            if (space.cross.activeInHierarchy)
+            {
+                skullPoints.Add(smallestNum);
+            }
+            else
+            {
+                smallestNum = smallestNum == 0 ? 0 : (-1) * smallestNum;
+                skullPoints.Add(smallestNum);
+                
+                if(space.hasTreasure)
+                {
+                    player.treasures.Remove(space.treasureValue);
+                    UIHandler.Instance.HideTreasureNumber(space.treasureValue);
+                }
+            }
+        }
+
+        return skullPoints;
+    }
+
+    private int findSmallestNumberFromSpaces(HashSet<BoardSpace> spaces)
+    {
+        List<int> filteredList = spaces.Select(sp => sp.Number).Where(x => x > 0).ToList();
+        if(filteredList.Count > 0)
+        {
+            return filteredList.Min();
+        }
+        return 0;
+    }
+
+    public void OvercomeSkullWhenPossible(BoardSpace filledSpace)
+    {
+        if (filledSpace.hasSkull)
+        {
+            HashSet<BoardSpace> adjacentSpaces = findAllAdjacentSpaces(filledSpace.row, filledSpace.column);
+
+            foreach(BoardSpace space in adjacentSpaces)
+            {
+                if (space.Number == Constants.OVERCOME_SKULL_NUMBER)
+                {
+                    filledSpace.ActivateCross();
+                    return;
+                }
+            }
+        } else if(filledSpace.Number == Constants.OVERCOME_SKULL_NUMBER)
+        {
+            HashSet<BoardSpace> adjacentSpaces = findAllAdjacentSpaces(filledSpace.row, filledSpace.column);
+
+            foreach (BoardSpace space in adjacentSpaces)
+            {
+                if (space.hasSkull)
+                {
+                    space.ActivateCross();
+                }
+            }
+        }
+    }
+
+    public HashSet<BoardSpace> findAllAdjacentSpaces(int x, int y)
+    {
+        HashSet<BoardSpace> spaces = new HashSet<BoardSpace>();
+        for (int dx = (x > 0 ? -1 : 0); dx <= (x < Constants.GRID_ROW ? 1 : 0); ++dx)
+        {
+            for (int dy = (y > 0 ? -1 : 0); dy <= (y < Constants.GRID_COL ? 1 : 0); ++dy)
+            {
+                if (dx != 0 || dy != 0)
+                {
+                    //Debug.Log("x:" + x + ",y:" + y + ",dx:" + dx + ",dy:" + dy);
+                    int currRow = (x + dx) >= Constants.GRID_ROW ? Constants.GRID_ROW - 1 : x + dx;
+                    int currCol = (y + dy) >= Constants.GRID_COL ? Constants.GRID_COL - 1 : y + dy;
+                    BoardSpace currSpace = BoardGrid[currRow, currCol];
+                    if (!currSpace.isSea)
+                    {
+                        spaces.Add(currSpace);
+                    }
+                }
+            }
+        }
+
+        return spaces;
+    }
+
+    public HashSet<BoardSpace> findAvailableAdjacentSpaces(int x, int y)
+    {
+        HashSet<BoardSpace> spaces = new HashSet<BoardSpace>();
+        for (int dx = (x > 0 ? -1 : 0); dx <= (x < Constants.GRID_ROW ? 1 : 0); ++dx)
+        {
+            for (int dy = (y > 0 ? -1 : 0); dy <= (y < Constants.GRID_COL ? 1 : 0); ++dy)
+            {
+                if (dx != 0 || dy != 0)
+                {
+                    //Debug.Log("x:" + x + ",y:" + y + ",dx:" + dx + ",dy:" + dy);
+                    int currRow = (x + dx) >= Constants.GRID_ROW ? Constants.GRID_ROW - 1 : x + dx;
+                    int currCol = (y + dy) >= Constants.GRID_COL ? Constants.GRID_COL - 1 : y + dy;
+                    BoardSpace currSpace = BoardGrid[currRow, currCol];
+                    if (!currSpace.isOccupied && !currSpace.isSea && !currSpace.isMountain)
+                    {
+                        spaces.Add(currSpace);
+                    }
+                }
+            }
+        }
+
+        return spaces;
     }
 
     private List<BoardSpace> identifySeaBoardSpaces()

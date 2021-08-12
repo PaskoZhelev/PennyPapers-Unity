@@ -11,6 +11,7 @@ public class Constants
     public static int MAX_TREASURES = 5;
     public static int MAX_SKULLS = 5;
     public static int MAX_ISLAND_SPACES_BOARD_TORTUGA = 30;
+    public static int OVERCOME_SKULL_NUMBER = 9;
 
     public static int PURPLE_DIE_INDEX = 0;
     public static int GREEN_DIE_INDEX = 1;
@@ -20,6 +21,10 @@ public class Constants
     public static float NEW_TURN_DELAY = 1.0f;
     public static float DICE_ROLLING_COMPENSATION_TIME = 0.4f;
     public static float TIMER = 3f;
+
+    // new values can be filled only next to number or ship
+    // as it is in the rules of the game
+    public static bool ADJACENCY_RULE_ENABLED = true;
 
     public static Color32 GREEN1 = new Color32(64, 164, 71, 255);
     public static Color32 GREEN2 = new Color32(97, 117, 73, 255);
@@ -42,5 +47,25 @@ public class Constants
         PINK, MARINE2, PURPLE1, RED1, GREEN2,
         PINK2, BLUE2, ORANGE2, PURPLE2, RED2
     };
+
+    public static string getTextSuccessLevelScore(int score)
+    {
+        if (score <= 59)
+        {
+            return "Tourist";
+        }
+        else if (score >= 60 && score <= 74)
+        {
+            return "Pathfinder";
+        }
+        else if (score >= 75 && score <= 89)
+        {
+            return "Voyager";
+        }
+        else
+        {
+            return "Explorer";
+        }
+    }
 
 }

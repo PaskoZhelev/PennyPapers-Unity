@@ -14,6 +14,17 @@ public class UIHandler : MonoBehaviour
     public SelectableNumber[] generalSelectableNumbers;
     public SelectableNumber[] purpleSelectableNumbers;
 
+    public GameObject[] skullMarks;
+    public Text[] treasureNumbers;
+    public Text treasuresTotalScore;
+    public Text[] skullNumbers;
+    public Text skullsTotalScore;
+    public Text FinalScore;
+
+    public GameObject GameEndPanel;
+    public Text gameEndFinalScoreText;
+    public Text gameEndSuccessLevelText;
+
     [HideInInspector]
     public float timeRemaining;
     [HideInInspector]
@@ -93,6 +104,46 @@ public class UIHandler : MonoBehaviour
         isNumberToPlaceSelected = false;
     }
 
+    public void ShowSkullMark()
+    {
+        for (int i = 0; i < skullMarks.Length; i++)
+        {
+            if(!skullMarks[i].activeInHierarchy)
+            {
+                skullMarks[i].SetActive(true);
+                return;
+            }
+        }
+    }
+
+    public void ShowTreasureNumber(int num, Color32 color)
+    {
+        for (int i = 0; i < treasureNumbers.Length; i++)
+        {
+            Text currTextNum = treasureNumbers[i];
+            if (!currTextNum.gameObject.activeInHierarchy)
+            {
+                currTextNum.gameObject.SetActive(true);
+                currTextNum.text = num.ToString();
+                currTextNum.color = color;
+                return;
+            }
+        }
+    }
+
+    public void HideTreasureNumber(int num)
+    {
+        for (int i = 0; i < treasureNumbers.Length; i++)
+        {
+            Text currTextNum = treasureNumbers[i];
+            if (currTextNum.text.Equals(num.ToString()))
+            {
+                currTextNum.gameObject.SetActive(false);
+                return;
+            }
+        }
+    }
+
     public void SetNumToPlace(int num)
     {
         if(!isNumberToPlaceSelected)
@@ -102,6 +153,36 @@ public class UIHandler : MonoBehaviour
         
         NumberToPlace = num;
         isNumberToPlaceSelected = true;
+    }
+
+    public void ShowEndGamePanel()
+    {
+        Player player = GameHandler.Instance.player;
+        for (int i = 0; i < player.skullPoints.Count; i++)
+        {
+            int currPoints = player.skullPoints[i];
+            Text textField = skullNumbers[i];
+            textField.gameObject.SetActive(true);
+            textField.text = currPoints.ToString();
+            // colors
+            if (currPoints > 0)
+            {
+                textField.color = Constants.NUMBER_COLORS[currPoints - 1];
+            } else if(currPoints < 0)
+            {
+                int positiveNum = currPoints * (-1);
+                textField.color = Constants.NUMBER_COLORS[positiveNum - 1];
+            }
+        }
+        treasuresTotalScore.text = player.treasureTotalPoints.ToString();
+        skullsTotalScore.text = player.skullTotalPoints.ToString();
+        FinalScore.text = player.FinalScore.ToString();
+        treasuresTotalScore.gameObject.SetActive(true);
+        skullsTotalScore.gameObject.SetActive(true);
+        FinalScore.gameObject.SetActive(true);
+        gameEndFinalScoreText.text = player.FinalScore.ToString();
+        gameEndSuccessLevelText.text = Constants.getTextSuccessLevelScore(player.FinalScore);
+        GameEndPanel.SetActive(true);
     }
 
     public void resetNumToPlace()

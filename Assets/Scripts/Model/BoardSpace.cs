@@ -9,23 +9,27 @@ public class BoardSpace : BaseElement, IPointerDownHandler
     [HideInInspector]
     public Image selectionPanel;
     [HideInInspector]
-    public GameObject treasureCircle;
+    public Text treasureCircle;
     [HideInInspector]
     public Image shipSkullImage;
     [HideInInspector]
     public Text numText;
-
     [HideInInspector]
+    public GameObject cross;
+
     public bool isOccupied;
     public bool isMountain;
     public bool isSea;
-    [HideInInspector]
     public bool hasShip;
     [HideInInspector]
     public bool hasSkull;
     [HideInInspector]
     public bool isEnabled;
-    
+    [HideInInspector]
+    public bool hasTreasure;
+    [HideInInspector]
+    public int treasureValue;
+
     public int Number;
     
     public int row;
@@ -35,9 +39,10 @@ public class BoardSpace : BaseElement, IPointerDownHandler
     void Start()
     {
         selectionPanel = transform.Find("SelectionPanel").gameObject.GetComponent<Image>();
-        treasureCircle = transform.Find("Circle").gameObject;
+        treasureCircle = transform.Find("Circle").gameObject.GetComponent<Text>();
         shipSkullImage = transform.Find("ShipSkull").gameObject.GetComponent<Image>();
         numText = transform.Find("Number").gameObject.GetComponent<Text>();
+        cross = transform.Find("Cross").gameObject;
         changeSelectionPanelOpacity(0.25f);
     }
 
@@ -59,6 +64,9 @@ public class BoardSpace : BaseElement, IPointerDownHandler
         numText.color = Constants.NUMBER_COLORS[num - 1];
         numText.gameObject.SetActive(true);
         GameHandler.Instance.player.numIslandSpacesFilled++;
+        GameHandler.Instance.AddPossibleAdjacentIslandSpaces(row, column);
+        GameHandler.Instance.CheckForTreasure(this);
+        GameHandler.Instance.OvercomeSkullWhenPossible(this);
     }
 
     public void PutSkull()
@@ -69,6 +77,8 @@ public class BoardSpace : BaseElement, IPointerDownHandler
         shipSkullImage.gameObject.SetActive(true);
         GameHandler.Instance.player.numIslandSpacesFilled++;
         GameHandler.Instance.player.numSkullsFilled++;
+        GameHandler.Instance.spacesWithSkull.Add(this);
+        GameHandler.Instance.OvercomeSkullWhenPossible(this);
     }
 
     public void PutShip()
@@ -77,6 +87,8 @@ public class BoardSpace : BaseElement, IPointerDownHandler
         shipSkullImage.sprite = UIHandler.Instance.shipSprite;
         hasShip = true;
         shipSkullImage.gameObject.SetActive(true);
+        GameHandler.Instance.AddPossibleAdjacentIslandSpaces(row, column);
+        GameHandler.Instance.CheckForTreasure(this);
     }
 
     public void EnableSpace()
@@ -89,6 +101,19 @@ public class BoardSpace : BaseElement, IPointerDownHandler
     {
         isEnabled = false;
         selectionPanel.gameObject.SetActive(false);
+    }
+
+    public void ActivateTreasureCircle(int num)
+    {
+        hasTreasure = true;
+        treasureValue = num;
+        treasureCircle.gameObject.SetActive(true);
+        treasureCircle.color = Constants.NUMBER_COLORS[num - 1];
+    }
+
+    public void ActivateCross()
+    {
+        cross.SetActive(true);
     }
 
     public void changeSelectionPanelOpacity(float opacityValue)
