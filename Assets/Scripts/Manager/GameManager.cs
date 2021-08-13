@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -15,9 +16,19 @@ public class GameManager : MonoBehaviour
         appVersion.text = Application.version;
     }
 
+    public void ActivateMainMenuScene()
+    {
+        SceneManager.LoadScene("MainMenuScene");
+    }
+
     public void ActivateGameScene()
     {
         SceneManager.LoadScene("GameScene");
+    }
+
+    public void ActivateHighScoresScene()
+    {
+        SceneManager.LoadScene("HighScoresScene");
     }
 
     /* SINGLETON */

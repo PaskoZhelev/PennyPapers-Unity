@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIHandler : MonoBehaviour
@@ -41,6 +42,8 @@ public class UIHandler : MonoBehaviour
     public GameObject GreenSelectionPanel;
     public GameObject GreenPurpleSelectionPanel;
 
+    public GameObject LoadingPanel;
+
     public Sprite skullSprite;
     public Sprite shipSprite;
 
@@ -70,6 +73,7 @@ public class UIHandler : MonoBehaviour
             }
         }
     }
+
 
     public void setGeneralSelectableNumbers()
     {
@@ -191,6 +195,17 @@ public class UIHandler : MonoBehaviour
         isNumberToPlaceSelected = false;
     }
 
+    public void ShowLoadingPanel()
+    {
+        LoadingPanel.SetActive(true);
+    }
+
+    public void HideLoadingPanel()
+    {
+        LoadingPanel.SetActive(false);
+    }
+
+
     public void ShowRedSelectionPanel()
     {
         SpecialSelectionPanel.SetActive(true);
@@ -287,6 +302,11 @@ public class UIHandler : MonoBehaviour
         {
             textTimer.text = seconds.ToString();
         }
+    }
+
+    public void ActivateMainMenuScene()
+    {
+        SceneManager.LoadScene("MainMenuScene");
     }
 
 

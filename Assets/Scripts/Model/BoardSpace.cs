@@ -56,7 +56,7 @@ public class BoardSpace : BaseElement, IPointerDownHandler
         }
     }
 
-    public void SetNumber(int num)
+    public void PutNumber(int num)
     {
         isOccupied = true;
         Number = num;

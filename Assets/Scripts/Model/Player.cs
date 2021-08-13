@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Player
 {
+    public string map;
     public HashSet<int> treasures;
     public int numSkullsFilled;
     public int numIslandSpacesFilled;
@@ -14,8 +15,9 @@ public class Player
     public int skullTotalPoints;
     public int FinalScore;
 
-    public Player()
+    public Player(string map)
     {
+        this.map = map;
         treasures = new HashSet<int>();
         skullPoints = new List<int>();
         numSkullsFilled = 0;

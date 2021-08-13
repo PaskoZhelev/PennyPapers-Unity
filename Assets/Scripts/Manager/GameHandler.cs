@@ -1,5 +1,8 @@
-﻿using System.Collections;
+﻿using BayatGames.SaveGameFree;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 
@@ -32,7 +35,8 @@ public class GameHandler : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        player = new Player();
+        UIHandler.Instance.ShowLoadingPanel();
+        player = new Player(Constants.TORTUGA_MAP);
         isFirstTurn = true;
         seaBoardSpaces = identifySeaBoardSpaces();
         islandBoardSpaces = identifyIslandBoardSpaces();
@@ -61,6 +65,7 @@ public class GameHandler : MonoBehaviour
     public IEnumerator StartNewTurnWithDelay()
     {
         yield return new WaitForSeconds(Constants.NEW_TURN_DELAY);
+        UIHandler.Instance.HideLoadingPanel();
         StartNewTurn();
     }
 
@@ -138,7 +143,6 @@ public class GameHandler : MonoBehaviour
             UIHandler.Instance.ShowTreasureNumber(foundTreasure.Number, Constants.NUMBER_COLORS[foundTreasure.Number - 1]);
             return;
         }
-        Debug.Log(foundTreasure);
     }
 
     // space is clicked
@@ -147,7 +151,7 @@ public class GameHandler : MonoBehaviour
         switch (currentFillType)
         {
             case FillType.NUMBER:
-                lastFilledSpace.SetNumber(UIHandler.Instance.NumberToPlace);
+                lastFilledSpace.PutNumber(UIHandler.Instance.NumberToPlace);
                 break;
             case FillType.SKULL:
                 lastFilledSpace.PutSkull();
@@ -163,8 +167,13 @@ public class GameHandler : MonoBehaviour
 
         // TODO Undo functionality disabled for now
         // Turn finished is called immediately
-        //UIHandler.Instance.StartTimer();
-        GameHandler.Instance.TurnFinished();
+        if (Constants.UNDO_FUNCTIONALITY_ENABLED)
+        {
+            UIHandler.Instance.StartTimer();
+        } else
+        {
+            GameHandler.Instance.TurnFinished();
+        }
     }
 
     public void TurnFinished()
@@ -296,7 +305,25 @@ public class GameHandler : MonoBehaviour
         player.treasureTotalPoints = new List<int>(player.treasures).Sum();
         player.skullTotalPoints = player.skullPoints.Sum();
         player.FinalScore = player.treasureTotalPoints + player.skullTotalPoints;
+        SaveScoreData();
         UIHandler.Instance.ShowEndGamePanel();
+    }
+
+    private void SaveScoreData()
+    {
+        Debug.Log("Saving Data");
+        List<int> existingScores = SaveGame.Load<List<int>>(player.map, true, SaveGame.EncodePassword);
+        if (null != existingScores)
+        {
+            existingScores.Add(player.FinalScore);
+        }
+        else
+        {
+            existingScores = new List<int>();
+            existingScores.Add(player.FinalScore);
+        }
+
+        SaveGame.Save<List<int>>(player.map, existingScores, true);
     }
 
     public List<int> FindSkullPoints()

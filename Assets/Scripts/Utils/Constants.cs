@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Constants
 {
+    public static string DB_NAME = "pennyPapers.sqlite";
+    public static string TORTUGA_MAP = "Tortuga";
+
     public static int NUM_DICE = 3;
     public static int GRID_ROW = 9;
     public static int GRID_COL = 9;
@@ -17,14 +20,15 @@ public class Constants
     public static int GREEN_DIE_INDEX = 1;
     public static int RED_DIE_INDEX = 2;
 
-    public static float ANIMATION_SPEED = 5500f;
-    public static float NEW_TURN_DELAY = 1.0f;
+    public static float ANIMATION_SPEED = 3500f;
+    public static float NEW_TURN_DELAY = 1.9f;
     public static float DICE_ROLLING_COMPENSATION_TIME = 0.4f;
     public static float TIMER = 3f;
 
     // new values can be filled only next to number or ship
     // as it is in the rules of the game
     public static bool ADJACENCY_RULE_ENABLED = true;
+    public static bool UNDO_FUNCTIONALITY_ENABLED = false;
 
     public static Color32 GREEN1 = new Color32(64, 164, 71, 255);
     public static Color32 GREEN2 = new Color32(97, 117, 73, 255);
