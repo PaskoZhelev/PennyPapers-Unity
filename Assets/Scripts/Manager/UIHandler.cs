@@ -43,6 +43,7 @@ public class UIHandler : MonoBehaviour
     public GameObject GreenPurpleSelectionPanel;
 
     public GameObject LoadingPanel;
+    public GameObject MenuPanel;
 
     public Sprite skullSprite;
     public Sprite shipSprite;
@@ -302,6 +303,16 @@ public class UIHandler : MonoBehaviour
         {
             textTimer.text = seconds.ToString();
         }
+    }
+
+    public void ShowMenuPanel()
+    {
+        MenuPanel.SetActive(true);
+    }
+
+    public void HideMenuPanel()
+    {
+        MenuPanel.SetActive(false);
     }
 
     public void ActivateMainMenuScene()

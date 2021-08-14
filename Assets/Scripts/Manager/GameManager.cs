@@ -13,7 +13,12 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
-        appVersion.text = Application.version;
+        
+        // some scenes don't have the appVersion text
+        if(null != appVersion)
+        {
+            appVersion.text = Application.version;
+        }
     }
 
     public void ActivateMainMenuScene()
@@ -29,6 +34,11 @@ public class GameManager : MonoBehaviour
     public void ActivateHighScoresScene()
     {
         SceneManager.LoadScene("HighScoresScene");
+    }
+
+    public void ActivateRulesScene()
+    {
+        SceneManager.LoadScene("RulesScene");
     }
 
     /* SINGLETON */
