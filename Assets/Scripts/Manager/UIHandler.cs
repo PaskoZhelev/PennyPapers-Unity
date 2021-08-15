@@ -33,6 +33,10 @@ public class UIHandler : MonoBehaviour
 
     public Text textTimer;
 
+    public Text mapName;
+    public GameObject tortugaBoard;
+    public GameObject maracaoBoard;
+
     public GameObject undoButton;
 
     public GameObject SpecialSelectionPanel;
@@ -73,6 +77,18 @@ public class UIHandler : MonoBehaviour
                 GameHandler.Instance.TurnFinished();
             }
         }
+    }
+
+    public void SetupTortugaBoard()
+    {
+        tortugaBoard.SetActive(true);
+        mapName.text = Constants.TORTUGA_MAP;
+    }
+
+    public void SetupMaracaoBoard()
+    {
+        maracaoBoard.SetActive(true);
+        mapName.text = Constants.MARACAO_MAP;
     }
 
 
@@ -173,6 +189,7 @@ public class UIHandler : MonoBehaviour
             if (currPoints > 0)
             {
                 textField.color = Constants.NUMBER_COLORS[currPoints - 1];
+                textField.text = "+" + currPoints.ToString();
             } else if(currPoints < 0)
             {
                 int positiveNum = currPoints * (-1);

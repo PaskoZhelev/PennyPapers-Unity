@@ -11,6 +11,11 @@ public class GameHandler : MonoBehaviour
     public BoardSpace[] allBoardSpaces;
     public BoardSpace[] initialIslandBoardSpaces;
 
+    public BoardSpace[] tortugaAllBoardSpaces;
+    public BoardSpace[] tortugaInitialIslandBoardSpaces;
+    public BoardSpace[] maracaoAllBoardSpaces;
+    public BoardSpace[] maracaoInitialIslandBoardSpaces;
+
     public BoardSpace[,] BoardGrid = new BoardSpace[Constants.GRID_ROW, Constants.GRID_COL];
 
     [HideInInspector]
@@ -36,7 +41,19 @@ public class GameHandler : MonoBehaviour
     void Start()
     {
         UIHandler.Instance.ShowLoadingPanel();
-        player = new Player(Constants.TORTUGA_MAP);
+        if (Constants.SELECTED_MAP == Constants.TORTUGA_MAP)
+        {
+            allBoardSpaces = tortugaAllBoardSpaces;
+            initialIslandBoardSpaces = tortugaInitialIslandBoardSpaces;
+            UIHandler.Instance.SetupTortugaBoard();
+        } else
+        {
+            allBoardSpaces = maracaoAllBoardSpaces;
+            initialIslandBoardSpaces = maracaoInitialIslandBoardSpaces;
+            UIHandler.Instance.SetupMaracaoBoard();
+        }
+        
+        player = new Player(Constants.SELECTED_MAP);
         isFirstTurn = true;
         seaBoardSpaces = identifySeaBoardSpaces();
         islandBoardSpaces = identifyIslandBoardSpaces();
@@ -44,7 +61,15 @@ public class GameHandler : MonoBehaviour
         spacesWithSkull = new List<BoardSpace>();
         GenerateBoardGrid();
 
-        StartCoroutine(StartNewTurnWithDelay());
+        StartCoroutine(StartGame());
+    }
+
+    public IEnumerator StartGame()
+    {
+        yield return new WaitForSeconds(Constants.STARTING_GAME_DELAY);
+        UIHandler.Instance.HideLoadingPanel();
+        yield return new WaitForSeconds(Constants.NEW_TURN_DELAY);
+        StartNewTurn();
     }
 
     public void StartNewTurn()
@@ -65,7 +90,6 @@ public class GameHandler : MonoBehaviour
     public IEnumerator StartNewTurnWithDelay()
     {
         yield return new WaitForSeconds(Constants.NEW_TURN_DELAY);
-        UIHandler.Instance.HideLoadingPanel();
         StartNewTurn();
     }
 
@@ -182,7 +206,8 @@ public class GameHandler : MonoBehaviour
         possibleAdjacentBoardSpaces.Remove(lastFilledSpace);
         UIHandler.Instance.resetGeneralSelectableNumbers();
         UIHandler.Instance.HideAllSelectionPanels();
-        StartNewTurn();
+        StartCoroutine(StartNewTurnWithDelay());
+        //StartNewTurn();
     }
 
     public void EnablePossibleIslandSpaces()
@@ -291,7 +316,7 @@ public class GameHandler : MonoBehaviour
 
     private bool isGameFinished()
     {
-        if (player.treasures.Count == Constants.MAX_TREASURES || player.numIslandSpacesFilled == Constants.MAX_ISLAND_SPACES_BOARD_TORTUGA)
+        if (player.treasures.Count == Constants.MAX_TREASURES || player.numIslandSpacesFilled == Constants.SELECTED_MAP_MAX_ISLAND_SPACES)
         {
             return true;
         }

@@ -25,7 +25,7 @@ public class HighScoresHandler : MonoBehaviour
 
     private void DisplayScores()
     {
-        List<int> gameScores = SaveGame.Load<List<int>>(Constants.TORTUGA_MAP, true, SaveGame.EncodePassword);
+        List<int> gameScores = SaveGame.Load<List<int>>(Constants.SELECTED_MAP, true, SaveGame.EncodePassword);
 
         if (null == gameScores || gameScores.Count == 0)
         {

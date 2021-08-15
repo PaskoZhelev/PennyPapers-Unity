@@ -208,6 +208,7 @@ GameObject:
   - component: {fileID: 202521490}
   - component: {fileID: 202521489}
   - component: {fileID: 202521491}
+  - component: {fileID: 202521492}
   m_Layer: 5
   m_Name: mainMenuBtn
   m_TagString: Untagged
@@ -326,6 +327,30 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &202521492
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 202521487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b50743f8dc74ac47b5e6107e2d036e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectToAnimate: {fileID: 0}
+  animationType: 5
+  easeType: 32
+  duration: 0.35
+  delay: 0.05
+  loop: 0
+  pingpong: 0
+  startPositionOffset: 1
+  from: {x: 0, y: 0, z: 0}
+  to: {x: 1, y: 1, z: 1}
+  showOnEnable: 1
+  workOnDisable: 0
 --- !u!1 &279120035
 GameObject:
   m_ObjectHideFlags: 0
@@ -778,6 +803,7 @@ GameObject:
   - component: {fileID: 822276363}
   - component: {fileID: 822276365}
   - component: {fileID: 822276364}
+  - component: {fileID: 822276366}
   m_Layer: 5
   m_Name: Logo
   m_TagString: Untagged
@@ -841,6 +867,30 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 822276362}
   m_CullTransparentMesh: 0
+--- !u!114 &822276366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 822276362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b50743f8dc74ac47b5e6107e2d036e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectToAnimate: {fileID: 0}
+  animationType: 5
+  easeType: 32
+  duration: 0.35
+  delay: 0.05
+  loop: 0
+  pingpong: 0
+  startPositionOffset: 1
+  from: {x: 0, y: 0, z: 0}
+  to: {x: 1, y: 1, z: 1}
+  showOnEnable: 1
+  workOnDisable: 0
 --- !u!1 &831317281
 GameObject:
   m_ObjectHideFlags: 0
@@ -852,6 +902,7 @@ GameObject:
   - component: {fileID: 831317282}
   - component: {fileID: 831317284}
   - component: {fileID: 831317283}
+  - component: {fileID: 831317285}
   m_Layer: 5
   m_Name: HighScoresPanel
   m_TagString: Untagged
@@ -922,6 +973,30 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 831317281}
   m_CullTransparentMesh: 0
+--- !u!114 &831317285
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 831317281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b50743f8dc74ac47b5e6107e2d036e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectToAnimate: {fileID: 0}
+  animationType: 2
+  easeType: 32
+  duration: 0.35
+  delay: 0.05
+  loop: 0
+  pingpong: 0
+  startPositionOffset: 1
+  from: {x: 0, y: 0, z: 0}
+  to: {x: 1, y: 1, z: 1}
+  showOnEnable: 1
+  workOnDisable: 0
 --- !u!1 &853394681
 GameObject:
   m_ObjectHideFlags: 0
@@ -1710,6 +1785,7 @@ GameObject:
   - component: {fileID: 1319088394}
   - component: {fileID: 1319088396}
   - component: {fileID: 1319088395}
+  - component: {fileID: 1319088397}
   m_Layer: 5
   m_Name: Panel (1)
   m_TagString: Untagged
@@ -1781,6 +1857,30 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1319088393}
   m_CullTransparentMesh: 0
+--- !u!114 &1319088397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1319088393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b50743f8dc74ac47b5e6107e2d036e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectToAnimate: {fileID: 0}
+  animationType: 2
+  easeType: 32
+  duration: 0.35
+  delay: 0.05
+  loop: 0
+  pingpong: 0
+  startPositionOffset: 1
+  from: {x: 0, y: 0, z: 0}
+  to: {x: 1, y: 1, z: 1}
+  showOnEnable: 1
+  workOnDisable: 0
 --- !u!1 &1322014021
 GameObject:
   m_ObjectHideFlags: 0

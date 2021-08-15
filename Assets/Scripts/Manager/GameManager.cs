@@ -9,6 +9,10 @@ public class GameManager : MonoBehaviour
 {
     public Text appVersion;
 
+    public GameObject MainMenuButtonsPanel;
+    public GameObject MapSelectionButtonsPanel;
+    public GameObject HighScoresMapSelectionButtonsPanel;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -39,6 +43,59 @@ public class GameManager : MonoBehaviour
     public void ActivateRulesScene()
     {
         SceneManager.LoadScene("RulesScene");
+    }
+
+    public void ContinueToMapSelection()
+    {
+        HideMainMenuButtonsPanel();
+        ShowMapSelectionButtonsPanel();
+    }
+
+    public void ContinueToHighScoresMapSelection()
+    {
+        HideMainMenuButtonsPanel();
+        ShowHighScoresMapSelectionButtonsPanel();
+    }
+
+    public void HideMainMenuButtonsPanel()
+    {
+        MainMenuButtonsPanel.SetActive(false);
+    }
+
+    public void ShowMapSelectionButtonsPanel()
+    {
+        MapSelectionButtonsPanel.SetActive(true);
+    }
+
+    public void TortugaMapSelected()
+    {
+        Constants.SELECTED_MAP = Constants.TORTUGA_MAP;
+        Constants.SELECTED_MAP_MAX_ISLAND_SPACES = Constants.MAX_ISLAND_SPACES_BOARD_TORTUGA;
+        ActivateGameScene();
+    }
+
+    public void MaracaoMapSelected()
+    {
+        Constants.SELECTED_MAP = Constants.MARACAO_MAP;
+        Constants.SELECTED_MAP_MAX_ISLAND_SPACES = Constants.MAX_ISLAND_SPACES_BOARD_MARACAO;
+        ActivateGameScene();
+    }
+
+    public void ShowHighScoresMapSelectionButtonsPanel()
+    {
+        HighScoresMapSelectionButtonsPanel.SetActive(true);
+    }
+
+    public void TortugaHighScoresSelected()
+    {
+        Constants.SELECTED_MAP = Constants.TORTUGA_MAP;
+        ActivateHighScoresScene();
+    }
+
+    public void MaracaoHighScoresSelected()
+    {
+        Constants.SELECTED_MAP = Constants.MARACAO_MAP;
+        ActivateHighScoresScene();
     }
 
     /* SINGLETON */
