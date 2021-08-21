@@ -72,9 +72,12 @@ public static class Constants
         {
             return "Voyager";
         }
-        else
+        else if (score >= 90 && score <= 99)
         {
             return "Explorer";
+        } else
+        {
+            return "Pirate";
         }
     }
 
